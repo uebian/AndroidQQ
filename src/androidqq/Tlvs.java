@@ -1,41 +1,9 @@
 package androidqq;
 
-public class Tlvs {
-	/*
-	 * .子程序 tlv_pack, 字节集 .参数 cmd, 文本型 .参数 bin, 字节集 .局部变量 pack, _Pack
-	 * 
-	 * pack.Empty () pack.writebytes (cmd) pack.SetShort (取字节集长度 (bin))
-	 * pack.writebytes (bin)
-	 * 
-	 * 返回 (pack.GetAll ())
-	 */
-
-	public static byte[] tlv18(QQUser user) {
-		// 00 18 //tlv18
-		// 00 16 //tlv长度22 如果太长不是tlv包
-		// 00 01 //_ping_version=1
-		// 00 00 06 00 //_sso_version=1536
-		// 00 00 00 10 //_appid
-		// 00 00 00 00 //_app_client_version
-		// 18 B4 A1 BC [QQ号码：414491068]
-		// 00 00 //0
-		// 00 00 //0
-
-		ByteBuilder bbBuilder = new ByteBuilder();
-		bbBuilder.writebytes("00 01");
-		bbBuilder.writebytes("00 01");
-		bbBuilder.writebytes("00 00 06 00");
-		bbBuilder.writebytes("00 00 00 10");
-		bbBuilder.writebytes("00 00 00 00");
-		bbBuilder.writelong(user.uin);
-		bbBuilder.writebytes("00 00");
-		bbBuilder.writebytes("00 00");
-		bbBuilder.rewriteint(bbBuilder.getdata().length);
-		bbBuilder.rewritebytes("00 18");
-		return bbBuilder.getdata();
-	}
-
-	public static byte[] tlv1(QQUser user) {
+public class Tlvs
+{
+	public static byte[] tlv1(QQUser user)
+	{
 		/*
 		 * , 字节集, 公开.参数 user, 字节集. 参数 time, 字节集. 局部变量 pack,_Pack
 		 */
@@ -59,15 +27,77 @@ public class Tlvs {
 		bbBuilder.rewritebytes("00 01");
 		return bbBuilder.getdata();
 	}
+	public static byte[] tlv8()
+	{
+		//00 08 //tlv-8
+		//00 08
+		//00 00 //0 
+		//00 00 08 04 //request_global._local_id
+		//00 00 //0 
+		ByteBuilder bbBuilder = new ByteBuilder();
+		bbBuilder.writebytes("00 00");
+		bbBuilder.writebytes("00 00 08 04");
+		bbBuilder.writebytes("00 00");
+		bbBuilder.rewriteint(bbBuilder.getdata().length);
+		bbBuilder.rewritebytes("00 08");
+		return bbBuilder.getdata();
+	}
+	public static byte[] tlv18(QQUser user)
+	{
+		// 00 18 //tlv18
+		// 00 16 //tlv长度22 如果太长不是tlv包
+		// 00 01 //_ping_version=1
+		// 00 00 06 00 //_sso_version=1536
+		// 00 00 00 10 //_appid
+		// 00 00 00 00 //_app_client_version
+		// 18 B4 A1 BC //[QQ号码：414491068]
+		// 00 00 //0
+		// 00 00 //0
+		ByteBuilder bbBuilder = new ByteBuilder();
+		bbBuilder.writebytes("00 01");
+		bbBuilder.writebytes("00 01");
+		bbBuilder.writebytes("00 00 06 00");
+		bbBuilder.writebytes("00 00 00 10");
+		bbBuilder.writebytes("00 00 00 00");
+		bbBuilder.writelong(user.uin);
+		bbBuilder.writebytes("00 00");
+		bbBuilder.writebytes("00 00");
+		bbBuilder.rewriteint(bbBuilder.getdata().length);
+		bbBuilder.rewritebytes("00 18");
+		return bbBuilder.getdata();
+	}
 
-	public static byte[] tlv106(QQUser user) {
+	public static byte[] tlv100()
+	{
+		//字节集, 公开 .参数 appId, 整数型 .局部变量 pack, _Pack
+		//01 00 //tlv-100
+		//00 16 
+		//00 01 //_db_buf_ver=1
+		//00 00 00 05 //_sso_ver=5
+		//00 00 00 10 //appid 
+		//20 02 92 13 //_sub_appid 
+		//00 00 00 00 //_app_client_version
+		//00 0E 10 E0 //_main_sigmap
+		ByteBuilder bbBuilder=new  ByteBuilder();
+		bbBuilder.writebytes("00 01");
+		bbBuilder.writebytes("00 00 00 05");
+		bbBuilder.writebytes("00 00 00 10");
+		bbBuilder.writeint(QQGlobal.appId);
+		bbBuilder.writebytes("00 00 00 00");
+		bbBuilder.writebytes("00 0E 10 E0");
+		bbBuilder.rewriteint(bbBuilder.getdata().length);
+		bbBuilder.rewritebytes("01 00");
+		return bbBuilder.getdata();
+	}
+
+	public static byte[] tlv106(QQUser user)
+	{
 		/*
 		 * .版本 2
 		 * 
 		 * .子程序 tlv106, 字节集, 公开 .参数 user, 字节集 .参数 md5pass, 字节集 .参数 md52pass, 字节集 .参数
 		 * _TGTKey, 字节集 .参数 imei_, 字节集 .参数 time, 字节集 .参数 appId, 整数型 .局部变量 pack, _Pack
 		 */
-
 		/*
 		 * 01 06 ' 00 70 [md5(md5(pass)+0 0 0 0+hexQQ)E8 FD 5B 08 BF 42 3C B9 F8 D4 23
 		 * 30 F2 E2 E3 59 ] ' 67 A4 4D 1D 59 08 97 15 92 03 BB E3 E8 7F 49 CC 65 A2 F6
@@ -110,6 +140,35 @@ public class Tlvs {
 		return bbBuilder.getdata();
 	}
 
+	public static byte[] tlv107()
+	{
+		// 01 07 //tlv-107 
+		//00 06
+		//00 00 //_pic_type 
+		//00 //0 
+		//00 00 //0 
+		//01 //1
+		ByteBuilder bbBuilder=new  ByteBuilder();
+		bbBuilder.writebytes("00 00");
+		bbBuilder.writebytes("00");
+		bbBuilder.writebytes("00 00");
+		bbBuilder.writebytes("01");
+		bbBuilder.rewriteint(bbBuilder.getdata().length);
+		bbBuilder.rewritebytes("01 07");
+		return bbBuilder.getdata();
+	}
+	public static byte[] tlv108(byte[] ksid)
+	{
+		//01 08 //tlv108 
+		//00 10
+		//93 33 4E AD B8 08 D3 42 82 55 B7 EF 28 E7 E8 F5
+		ByteBuilder bbBuilder=new  ByteBuilder();
+		bbBuilder.writebytes(ksid);
+		bbBuilder.rewriteint(bbBuilder.getdata().length);
+		bbBuilder.rewritebytes("01 08");
+		return bbBuilder.getdata();
+	}
+
 	public static byte[] tlv116()
 	{
 		// 01 16 
@@ -119,12 +178,45 @@ public class Tlvs {
 		// 00 01 04 00 mSubSigMap 
 		// 00 _sub_appid_list.length 
 		ByteBuilder bbBuilder=new  ByteBuilder();
-		bbBuilder.writebytes ("00");
+		bbBuilder.writebytes("00");
 		bbBuilder.writebytes("00 00 7F 7C");
 		bbBuilder.writebytes("00 01 04 00");
-		bbBuilder.writebytes ("00");
+		bbBuilder.writebytes("00");
 		bbBuilder.rewriteint(bbBuilder.getdata().length);
 		bbBuilder.rewritebytes("01 16");
+		return bbBuilder.getdata();
+	}
+	public static byte[] tlv16b()
+	{
+		//01 6B
+		//00 0F 
+		//00 01
+		//00 0B
+		//67 61 6D 65 2E 71 71 2E 63 6F 6D//[game.qq.com]
+		ByteBuilder bbBuilder=new  ByteBuilder();
+		bbBuilder.writebytes("00 01");
+		bbBuilder.writebytes("00 0B");
+		bbBuilder.writebytes("67 61 6D 65 2E 71 71 2E 63 6F 6D");
+		bbBuilder.writebytes("00");
+		bbBuilder.rewriteint(bbBuilder.getdata().length);
+		bbBuilder.rewritebytes("01 6B");
+		return bbBuilder.getdata();
+	}
+	public static byte[] tlv177()
+	{
+		//01 77 
+		//00 0E 
+		//01 
+		//53 FB 17 9B 
+		//00 07 
+		//35 2E 32 2E 33 2E 30 [5.2.3.0]
+		ByteBuilder bbBuilder=new  ByteBuilder();
+		bbBuilder.writebytes("01");
+		bbBuilder.writebytes("53 FB 17 9B");
+		bbBuilder.writebytes("00 07");
+		bbBuilder.writebytes("35 2E 32 2E 33 2E 30");
+		bbBuilder.rewriteint(bbBuilder.getdata().length);
+		bbBuilder.rewritebytes("01 77");
 		return bbBuilder.getdata();
 	}
 	/*
@@ -154,15 +246,6 @@ public class Tlvs {
 	 * 53 //VieryToken2 pack.Empty () pack.writebytes (VieryToken2)
 	 * 
 	 * 返回 (tlv_pack ("01 04", pack.GetAll ()))
-	 * 
-	 * .子程序 tlv107, 字节集, 公开 .局部变量 pack, _Pack
-	 * 
-	 * ' 01 07 //tlv-107 ' 00 06 ' 00 00 //_pic_type ' 00 //0 ' 00 00 //0 ' 01 //1
-	 * pack.Empty () pack.writebytes ("00 00") pack.writebytes ("00")
-	 * pack.writebytes ("00 00") pack.writebytes ("01")
-	 * 
-	 * 返回 (tlv_pack ("01 07", pack.GetAll ()))
-	 * 
 	 * 
 	 * .子程序 tlv108, 字节集, 公开 .参数 _ksid, 字节集
 	 * 
@@ -273,25 +356,8 @@ public class Tlvs {
 	 * 
 	 * 返回 (tlv_pack ("01 41", pack.GetAll ()))
 	 * 
-	 * .子程序 tlv8, 字节集, 公开 .局部变量 pack, _Pack
 	 * 
-	 * ' 00 08 //tlv-8 ' 00 08 ' 00 00 //0 ' 00 00 08 04 //request_global._local_id
-	 * ' 00 00 //0 pack.writebytes ("00 00 ") pack.writebytes ("00 00 08 04")
-	 * pack.writebytes ("00 00")
-	 * 
-	 * 返回 (tlv_pack ("00 08", pack.GetAll ()))
-	 * 
-	 * 
-	 * .子程序 tlv16b, 字节集, 公开 .局部变量 pack, _Pack
-	 * 
-	 * ' 01 6B ' 00 0F ' 00 01 ' 00 0B ' 67 61 6D 65 2E 71 71 2E 63 6F 6D
-	 * [game.qq.com]
-	 * 
-	 * pack.Empty () pack.writebytes ("00 01") pack.writebytes (" 00 0B")
-	 * pack.writebytes ("67 61 6D 65 2E 71 71 2E 63 6F 6D")
-	 * 
-	 * 返回 (tlv_pack ("01 6B", pack.GetAll ()))
-	 * 
+
 	 * .子程序 tlv147, 字节集, 公开 .参数 _apk_v, 文本型 .参数 _apk_sig, 字节集 .局部变量 pack, _Pack
 	 * 
 	 * ' 01 47//tlv-147 ' 00 1D ' 00 00 00 10 //appid ' 00 05 ' 33 2E 30 2E 30 //
@@ -301,15 +367,6 @@ public class Tlvs {
 	 * (_apk_sig)) pack.writebytes (_apk_sig)
 	 * 
 	 * 返回 (tlv_pack ("01 47", pack.GetAll ()))
-	 * 
-	 * 
-	 * .子程序 tlv177, 字节集, 公开 .局部变量 pack, _Pack
-	 * 
-	 * ' 01 77 ' 00 0E ' 01 ' 53 FB 17 9B ' 00 07 ' 35 2E 32 2E 33 2E 30 [5.2.3.0]
-	 * pack.Empty () pack.writebytes ("01") pack.writebytes ("53 FB 17 9B")
-	 * pack.writebytes ("00 07") pack.writebytes ("35 2E 32 2E 33 2E 30")
-	 * 
-	 * 返回 (tlv_pack ("01 77", pack.GetAll ()))
 	 * 
 	 * .子程序 tlv114_get0058, 字节集, 公开 .参数 bin, 字节集 .局部变量 unPack, _Unpack .局部变量 len
 	 * 
