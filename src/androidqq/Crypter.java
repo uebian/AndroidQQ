@@ -3,70 +3,70 @@ import java.io.*;
 import java.util.*;
 
 /**
- * ���ܽ���QQ��Ϣ�Ĺ�����. QQ��Ϣ�ļ����㷨��һ��16�εĵ������̣������Ƿ����ģ�ÿһ�����ܵ�Ԫ��8�ֽڣ����Ҳ��8�ֽڣ���Կ��16�ֽ�
- * ������prePlain��ʾǰһ�����Ŀ飬plain��ʾ��ǰ���Ŀ飬crypt��ʾ��ǰ���Ŀ���ܵõ������Ŀ飬preCrypt��ʾǰһ�����Ŀ�
- * f��ʾ�����㷨��d��ʾ�����㷨 ��ô��plain�õ�crypt�Ĺ�����: crypt = f(plain &circ; preCrypt) &circ;
- * prePlain ���ԣ���crypt�õ�plain�Ĺ�����Ȼ�� plain = d(crypt &circ; prePlain) &circ;
- * preCrypt ���⣬�㷨�����������ƣ����������ǰ�����ĺ�ֱ����һ�����ֽ������Ա�֤���ĳ�����8�ֽڵı���
- * �����ֽ�����ԭʼ���ĳ����йأ����ķ�����:
+ * 加密解密QQ消息的工具类. QQ消息的加密算法是一个16次的迭代过程，并且是反馈的，每一个加密单元是8字节，输出也是8字节，密钥是16字节
+ * 我们以prePlain表示前一个明文块，plain表示当前明文块，crypt表示当前明文块加密得到的密文块，preCrypt表示前一个密文块
+ * f表示加密算法，d表示解密算法 那么从plain得到crypt的过程是: crypt = f(plain &circ; preCrypt) &circ;
+ * prePlain 所以，从crypt得到plain的过程自然是 plain = d(crypt &circ; prePlain) &circ;
+ * preCrypt 此外，算法有它的填充机制，其会在明文前和明文后分别填充一定的字节数，以保证明文长度是8字节的倍数
+ * 填充的字节数与原始明文长度有关，填充的方法是:
  * 
  * <pre>
  * <code> * 
- *      ------- ��Ϣ����㷨 ----------- 
- *      a = (���ĳ��� + 10) mod 8
- *      if(a ������ 0) a = 8 - a;
- *      b = ����� &amp; 0xF8 | a;              ����������ǰ�a��ֵ����������
- *      plain[0] = b;                     Ȼ���b��Ϊ���ĵĵ�0���ֽڣ�������0���ֽھͱ�����a����Ϣ�������Ϣ�ڽ���ʱ��Ҫ�����ҵ��������ĵ���ʼλ��
- *      plain[1 �� a+2] = ����� &amp; 0xFF;    �����������������ĵĵ�1����a+2���ֽ�
- *      plain[a+3 �� a+3+���ĳ���-1] = ����; ��a+3�ֽڿ�ʼ��������������
- *      plain[a+3+���ĳ���, ���] = 0;       ��������0����䵽�ܳ���Ϊ8������Ϊֹ������Ϊֹ�������ˣ���������õ���Ҫ���ܵ���������
- *      ------- ��Ϣ����㷨 ------------ *   
+ *      ------- 消息填充算法 ----------- 
+ *      a = (明文长度 + 10) mod 8
+ *      if(a 不等于 0) a = 8 - a;
+ *      b = 随机数 &amp; 0xF8 | a;              这个的作用是把a的值保存了下来
+ *      plain[0] = b;                     然后把b做为明文的第0个字节，这样第0个字节就保存了a的信息，这个信息在解密时就要用来找到真正明文的起始位置
+ *      plain[1 至 a+2] = 随机数 &amp; 0xFF;    这里用随机数填充明文的第1到第a+2个字节
+ *      plain[a+3 至 a+3+明文长度-1] = 明文; 从a+3字节开始才是真正的明文
+ *      plain[a+3+明文长度, 最后] = 0;       在最后，填充0，填充到总长度为8的整数为止。到此为止，结束了，这就是最后得到的要加密的明文内容
+ *      ------- 消息填充算法 ------------ *   
  * </code>
  * </pre> 
  */
 public class Crypter {
-    // ָ��ǰ�����Ŀ�
+    // 指向当前的明文块
     private byte[] plain;
-    // ��ָ��ǰ��һ�����Ŀ�
+    // 这指向前面一个明文块
     private byte[] prePlain;
-    // ��������Ļ�������
+    // 输出的密文或者明文
     private byte[] out;
-    // ��ǰ���ܵ�����λ�ú���һ�μ��ܵ����Ŀ�λ�ã��������8
+    // 当前加密的密文位置和上一次加密的密文块位置，他们相差8
     private int crypt, preCrypt;
-    // ��ǰ�����ļ��ܽ��ܿ��λ��
+    // 当前处理的加密解密块的位置
     private int pos;     
-    // �����
+    // 填充数
     private int padding;
-    // ��Կ
+    // 密钥
     private byte[] key;
-    // ���ڼ���ʱ����ʾ��ǰ�Ƿ��ǵ�һ��8�ֽڿ飬��Ϊ�����㷨�Ƿ�����
-    // �����ʼ��8���ֽ�û�з������ã�������Ҫ�����������
+    // 用于加密时，表示当前是否是第一个8字节块，因为加密算法是反馈的
+    // 但是最开始的8个字节没有反馈可用，所有需要标明这种情况
     private boolean header = true;
-    // �����ʾ��ǰ���ܿ�ʼ��λ�ã�֮����Ҫ��ôһ��������Ϊ�˱��⵱���ܵ����ʱ
-    // �����Ѿ�û�����ݣ���ʱ��ͻ����������������������ж����������ó���
+    // 这个表示当前解密开始的位置，之所以要这么一个变量是为了避免当解密到最后时
+    // 后面已经没有数据，这时候就会出错，这个变量就是用来判断这种情况免得出错
     private int contextStart;
-    // ���������
+    // 随机数对象
     private static Random random = CrypterUtil.random();
-    // �ֽ������
+    // 字节输出流
 	private ByteArrayOutputStream baos;
 
 	/**
-	 * ���캯��
+	 * 构造函数
 	 */
 	public Crypter() {
 		baos = new ByteArrayOutputStream(8);
 	}
 
     /**
-     * ����
-     * @param in ����
-     * @param offset ���Ŀ�ʼ��λ��
-     * @param len ���ĳ���
-     * @param k ��Կ
-     * @return ����
+     * 解密
+     * @param in 密文
+     * @param offset 密文开始的位置
+     * @param len 密文长度
+     * @param k 密钥
+     * @return 明文
      */
     public byte[] decrypt(byte[] in, int offset, int len, byte[] k) {
-		// �����Կ
+		// 检查密钥
 		if(k == null)
 			return null;
 
@@ -75,35 +75,35 @@ public class Crypter {
         int count;
         byte[] m = new byte[offset + 8];
 
-        // ��ΪQQ��Ϣ����֮��������16�ֽڣ����ҿ϶���8�ı������������������
+        // 因为QQ消息加密之后至少是16字节，并且肯定是8的倍数，这里检查这种情况
         if((len % 8 != 0) || (len < 16)) return null;
-        // �õ���Ϣ��ͷ�����ؼ��ǵõ��������Ŀ�ʼ��λ�ã������Ϣ���ڵ�һ���ֽ����棬�������ý��ܵõ��ĵ�һ���ֽ���7����
+        // 得到消息的头部，关键是得到真正明文开始的位置，这个信息存在第一个字节里面，所以其用解密得到的第一个字节与7做与
         prePlain = decipher(in, offset);
         pos = prePlain[0] & 0x7;
-        // �õ��������ĵĳ���
+        // 得到真正明文的长度
         count = len - pos - 10;
-        // ������ĳ���С��0���ǿ϶��ǳ����ˣ����紫�����֮��ģ�����
+        // 如果明文长度小于0，那肯定是出错了，比如传输错误之类的，返回
         if(count < 0) return null;
 
-        // �������ʱ��preCrypt���ͼ���ʱ��һ��8�ֽڿ�û��prePlainһ��������ʱ
-        // ��һ��8�ֽڿ�Ҳû��preCrypt���������ｨһ��ȫ0��
+        // 这个是临时的preCrypt，和加密时第一个8字节块没有prePlain一样，解密时
+        // 第一个8字节块也没有preCrypt，所有这里建一个全0的
         for(int i = offset; i < m.length; i++)
             m[i] = 0;
-        // ͨ��������Ĵ��룬����Ӧ����û�������ˣ����Ƿ������������
+        // 通过了上面的代码，密文应该是没有问题了，我们分配输出缓冲区
         out = new byte[count];
-        // ����preCrypt��λ�õ���0��ע��Ŀǰ��preCryptλ����ָ��m�ģ���Ϊjavaû��ָ�룬���������ں���Ҫ���Ƶ�ǰ����buf������
+        // 设置preCrypt的位置等于0，注意目前的preCrypt位置是指向m的，因为java没有指针，所以我们在后面要控制当前密文buf的引用
         preCrypt = 0;
-        // ��ǰ������λ�ã�Ϊʲô��8����0�أ�ע��ǰ�������Ѿ�������ͷ����Ϣ�ˣ����ڵ�Ȼ��8��
+        // 当前的密文位置，为什么是8不是0呢？注意前面我们已经解密了头部信息了，现在当然该8了
         crypt = 8;
-        // ��Ȼ���Ҳ��8
+        // 自然这个也是8
         contextStart = 8;
-        // ��1���ͼ����㷨�Ƕ�Ӧ��
+        // 加1，和加密算法是对应的
         pos++;
 
-        // ��ʼ����ͷ����������������������8�ֽڣ��������һ��
-        // ��Ϊ�ǽ�����һ�飬����������һ����� m = in����һ�鵱Ȼ��preCrypt�ˣ����ǲ�����m��
-        // �����������8����˵����ʲô��˵����ͷ8���ֽڵ������ǰ�����������Ϣ�ģ���Ȼ����Ҫ��m������Ū����
-        // ���ԣ�����Ȼ������8�Ļ���˵����ͷ8���ֽڵ����ĳ���һ��������Ϣ����֮�⣬�����������õ����
+        // 开始跳过头部，如果在这个过程中满了8字节，则解密下一块
+        // 因为是解密下一块，所以我们有一个语句 m = in，下一块当然有preCrypt了，我们不再用m了
+        // 但是如果不满8，这说明了什么？说明了头8个字节的密文是包含了明文信息的，当然还是要用m把明文弄出来
+        // 所以，很显然，满了8的话，说明了头8个字节的密文除了一个长度信息有用之外，其他都是无用的填充
         padding = 1;
         while(padding <= 2) {
             if(pos < 8) {
@@ -116,8 +116,8 @@ public class Crypter {
             }
         }
 
-        // �����ǽ��ܵ���Ҫ�׶Σ����ʱ��ͷ������䶼�Ѿ������ˣ���ʼ����
-        // ע���������һ��whileû����8�������һ��if�����õľ���ԭʼ��m���������m����in��
+        // 这里是解密的重要阶段，这个时候头部的填充都已经跳过了，开始解密
+        // 注意如果上面一个while没有满8，这里第一个if里面用的就是原始的m，否则这个m就是in了
         int i = 0;
         while(count != 0) {
             if(pos < 8) {
@@ -134,8 +134,8 @@ public class Crypter {
             }
         }
 
-        // ���Ľ��ܲ��֣�����һ��while�Ѿ������Ķ�������ˣ���ʣ��β��������ˣ�Ӧ��ȫ��0
-        // ���������м���Ƿ������֮���ǲ���0��������ǵĻ��ǿ϶������ˣ�����null
+        // 最后的解密部分，上面一个while已经把明文都解出来了，就剩下尾部的填充了，应该全是0
+        // 所以这里有检查是否解密了之后是不是0，如果不是的话那肯定出错了，返回null
         for(padding = 1; padding < 8; padding++) {
             if(pos < 8) {
                 if((m[offset + preCrypt + pos] ^ prePlain[pos]) != 0)
@@ -154,27 +154,27 @@ public class Crypter {
 
     /**
      * @param in
-     *            ��Ҫ�����ܵ�����
+     *            需要被解密的密文
      * @param inLen
-     *            ���ĳ���
+     *            密文长度
      * @param k
-     *            ��Կ
-     * @return Message �ѽ��ܵ���Ϣ
+     *            密钥
+     * @return Message 已解密的消息
      */
     public byte[] decrypt(byte[] in, byte[] k) {   
         return decrypt(in, 0, in.length, k);
     }
 
     /**
-     * ����
-     * @param in �����ֽ�����
-     * @param offset ��ʼ���ܵ�ƫ��
-     * @param len ���ܳ���
-     * @param k ��Կ
-     * @return �����ֽ�����
+     * 加密
+     * @param in 明文字节数组
+     * @param offset 开始加密的偏移
+     * @param len 加密长度
+     * @param k 密钥
+     * @return 密文字节数组
      */
     public byte[] encrypt(byte[] in, int offset, int len, byte[] k) {
-		// �����Կ
+		// 检查密钥
 		if(k == null)
 			return in;
 
@@ -186,25 +186,25 @@ public class Crypter {
         this.key = k;
         header = true;
 
-        // ����ͷ������ֽ���
+        // 计算头部填充字节数
         pos = (len + 0x0A) % 8;
         if(pos != 0)
             pos = 8 - pos;
-        // ������������ĳ���
+        // 计算输出的密文长度
         out = new byte[len + pos + 10];
-        // ����Ĳ�����pos�浽��plain�ĵ�һ���ֽ�����
-        // 0xF8������λ�ǿյģ���������pos����Ϊpos��0��7��ֵ����ʾ�ı���ʼ���ֽ�λ��
+        // 这里的操作把pos存到了plain的第一个字节里面
+        // 0xF8后面三位是空的，正好留给pos，因为pos是0到7的值，表示文本开始的字节位置
         plain[0] = (byte)((rand() & 0xF8) | pos);
 
-        // ��������������������plain[1]��plain[pos]֮�������
+        // 这里用随机产生的数填充plain[1]到plain[pos]之间的内容
         for(int i = 1; i <= pos; i++)
             plain[i] = (byte)(rand() & 0xFF);
         pos++;
-        // �������prePlain����һ��8�ֽڿ鵱Ȼû��prePlain������������һ��ȫ0�ĸ���һ��8�ֽڿ�
+        // 这个就是prePlain，第一个8字节块当然没有prePlain，所以我们做一个全0的给第一个8字节块
         for(int i = 0; i < 8; i++)
             prePlain[i] = 0x0;
 
-        // �������2���ֽڵ������������������������8�ֽھͼ���֮
+        // 继续填充2个字节的随机数，这个过程中如果满了8字节就加密之
         padding = 1;
         while(padding <= 2) {
             if(pos < 8) {
@@ -215,7 +215,7 @@ public class Crypter {
                 encrypt8Bytes();
         }
 
-        // ͷ��������ˣ����￪ʼ�������������ˣ�Ҳ������8�ֽھͼ��ܣ�һֱ�����Ķ���
+        // 头部填充完了，这里开始填真正的明文了，也是满了8字节就加密，一直到明文读完
         int i = offset;
         while(len > 0) {
             if(pos < 8) {
@@ -226,7 +226,7 @@ public class Crypter {
                 encrypt8Bytes();
         }
 
-        // �������0���Ա�֤��8�ֽڵı���
+        // 最后填上0，以保证是8字节的倍数
         padding = 1;
         while(padding <= 7) {
             if(pos < 8) {
@@ -242,44 +242,44 @@ public class Crypter {
 
     /**
      * @param in
-     *            ��Ҫ���ܵ�����
+     *            需要加密的明文
      * @param inLen
-     *            ���ĳ���
+     *            明文长度
      * @param k
-     *            ��Կ
-     * @return Message ����
+     *            密钥
+     * @return Message 密文
      */
     public byte[] encrypt(byte[] in, byte[] k) {
         return encrypt(in, 0, in.length, k);
     }
 
     /**
-     * ����һ��8�ֽڿ�
+     * 加密一个8字节块
      * 
      * @param in
-     *     �����ֽ�����
+     *     明文字节数组
      * @return
-     *     �����ֽ�����
+     *     密文字节数组
      */
     private byte[] encipher(byte[] in) {
-        // ����������16��
+        // 迭代次数，16次
         int loop = 0x10;
-        // �õ����ĺ���Կ�ĸ������֣�ע��javaû���޷������ͣ�����Ϊ�˱�ʾһ���޷��ŵ�����
-        // ��������long�����long��ǰ32λ��ȫ0�ģ�����ͨ�����ַ�ʽģ���޷��������������õ���longҲ����һ����
-        // ����Ϊ�˱�֤ǰ32λΪ0����Ҫ��0xFFFFFFFF��һ��λ��            
+        // 得到明文和密钥的各个部分，注意java没有无符号类型，所以为了表示一个无符号的整数
+        // 我们用了long，这个long的前32位是全0的，我们通过这种方式模拟无符号整数，后面用到的long也都是一样的
+        // 而且为了保证前32位为0，需要和0xFFFFFFFF做一下位与            
         long y = CrypterUtil.getUnsignedInt(in, 0, 4);
         long z = CrypterUtil.getUnsignedInt(in, 4, 4);
         long a = CrypterUtil.getUnsignedInt(key, 0, 4);
         long b = CrypterUtil.getUnsignedInt(key, 4, 4);
         long c = CrypterUtil.getUnsignedInt(key, 8, 4);
         long d = CrypterUtil.getUnsignedInt(key, 12, 4);
-        // �����㷨��һЩ���Ʊ�����Ϊʲôdelta��0x9E3779B9�أ�
-        // �������TEA�㷨��delta��ʵ���Ǿ���(sqr(5) - 1) * 2^31 (����5����1���ٳ�2��31�η�)
+        // 这是算法的一些控制变量，为什么delta是0x9E3779B9呢？
+        // 这个数是TEA算法的delta，实际是就是(sqr(5) - 1) * 2^31 (根号5，减1，再乘2的31次方)
         long sum = 0;
         long delta = 0x9E3779B9;
         delta &= 0xFFFFFFFFL;
 
-        // ��ʼ�����ˣ����߰���ģ���Ҳ��������������DES֮��Ĳ�࣬��������������ȥ
+        // 开始迭代了，乱七八糟的，我也看不懂，反正和DES之类的差不多，都是这样倒来倒去
         while (loop-- > 0) {
             sum += delta;
             sum &= 0xFFFFFFFFL;
@@ -289,7 +289,7 @@ public class Crypter {
             z &= 0xFFFFFFFFL;
         }
 
-        // �������������ģ���Ϊ���õ�long��������Ҫǿ��ת��һ�±��int
+        // 最后，我们输出密文，因为我用的long，所以需要强制转换一下变成int
         baos.reset();
         writeInt((int)y);
         writeInt((int)z);
@@ -297,36 +297,36 @@ public class Crypter {
     }
 
     /**
-     * ���ܴ�offset��ʼ��8�ֽ�����
+     * 解密从offset开始的8字节密文
      * 
      * @param in
-     *     �����ֽ�����
+     *     密文字节数组
      * @param offset
-     *     ���Ŀ�ʼλ��
+     *     密文开始位置
      * @return
-     *     ����
+     *     明文
      */
     private byte[] decipher(byte[] in, int offset) {
-        // ����������16��
+        // 迭代次数，16次
         int loop = 0x10;
-        // �õ����ĺ���Կ�ĸ������֣�ע��javaû���޷������ͣ�����Ϊ�˱�ʾһ���޷��ŵ�����
-        // ��������long�����long��ǰ32λ��ȫ0�ģ�����ͨ�����ַ�ʽģ���޷��������������õ���longҲ����һ����
-        // ����Ϊ�˱�֤ǰ32λΪ0����Ҫ��0xFFFFFFFF��һ��λ��
+        // 得到密文和密钥的各个部分，注意java没有无符号类型，所以为了表示一个无符号的整数
+        // 我们用了long，这个long的前32位是全0的，我们通过这种方式模拟无符号整数，后面用到的long也都是一样的
+        // 而且为了保证前32位为0，需要和0xFFFFFFFF做一下位与
         long y = CrypterUtil.getUnsignedInt(in, offset, 4);
         long z = CrypterUtil.getUnsignedInt(in, offset + 4, 4);
         long a = CrypterUtil.getUnsignedInt(key, 0, 4);
         long b = CrypterUtil.getUnsignedInt(key, 4, 4);
         long c = CrypterUtil.getUnsignedInt(key, 8, 4);
         long d = CrypterUtil.getUnsignedInt(key, 12, 4);
-        // �㷨��һЩ���Ʊ�����sum������Ҳ�����ˣ����sum�͵��������й�ϵ
-        // ��Ϊdelta����ô�࣬����sum�������ô��Ļ���������ʱ�����������16�Σ����
-        // �õ�0�����������Ϊ�˵õ��ͼ���ʱ�෴˳��Ŀ��Ʊ������������ܽ���ѽ����
+        // 算法的一些控制变量，sum在这里也有数了，这个sum和迭代次数有关系
+        // 因为delta是这么多，所以sum如果是这么多的话，迭代的时候减减减，减16次，最后
+        // 得到0。反正这就是为了得到和加密时相反顺序的控制变量，这样才能解密呀～～
         long sum = 0xE3779B90;
         sum &= 0xFFFFFFFFL;
         long delta = 0x9E3779B9;
         delta &= 0xFFFFFFFFL;
 
-        // ������ʼ�ˣ� @_@
+        // 迭代开始了， @_@
         while(loop-- > 0) {
             z -= ((y << 4) + c) ^ (y + sum) ^ ((y >>> 5) + d);
             z &= 0xFFFFFFFFL;
@@ -343,7 +343,7 @@ public class Crypter {
     }
 
     /**
-     * д��һ�����͵�����������ֽ�����
+     * 写入一个整型到输出流，高字节优先
      * 
      * @param t
      */
@@ -355,39 +355,39 @@ public class Crypter {
     }
 
     /**
-     * ����
+     * 解密
      * 
      * @param in
-     *     ����
+     *     密文
      * @return
-     *     ����
+     *     明文
      */
     private byte[] decipher(byte[] in) {
         return decipher(in, 0);
     }
 
     /**
-     * ����8�ֽ� 
+     * 加密8字节 
      */
     private void encrypt8Bytes() {
-        // �ⲿ�������������˵�� plain ^ preCrypt��ע�������ж����ǲ��ǵ�һ��8�ֽڿ飬����ǵĻ����Ǹ�prePlain�͵���preCrypt��
+        // 这部分完成我上面所说的 plain ^ preCrypt，注意这里判断了是不是第一个8字节块，如果是的话，那个prePlain就当作preCrypt用
         for(pos = 0; pos < 8; pos++) {
             if(header) 
 				plain[pos] ^= prePlain[pos];
             else
 				plain[pos] ^= out[preCrypt + pos];
         }
-        // ������������˵�� f(plain ^ preCrypt)
+        // 这个完成我上面说的 f(plain ^ preCrypt)
         byte[] crypted = encipher(plain);
-        // ���ûʲô�����ǿ���һ�£�java����c��������ֻ����ô�ɣ�c�Ͳ�����һ����
+        // 这个没什么，就是拷贝一下，java不像c，所以我只好这么干，c就不用这一步了
         System.arraycopy(crypted, 0, out, crypt, 8);
 
-        // �������� f(plain ^ preCrypt) ^ prePlain��ok�����濽��һ�¾�����
+        // 这个完成了 f(plain ^ preCrypt) ^ prePlain，ok，下面拷贝一下就行了
         for(pos = 0; pos < 8; pos++)
             out[crypt + pos] ^= prePlain[pos];
         System.arraycopy(plain, 0, prePlain, 0, 8);
 
-        // ����˼��ܣ������ǵ���crypt��preCrypt�ȵȶ�����ʱ����
+        // 完成了加密，现在是调整crypt，preCrypt等等东西的时候了
         preCrypt = crypt;
         crypt += 8;      
         pos = 0;
@@ -395,33 +395,33 @@ public class Crypter {
     }
 
     /**
-     * ����8���ֽ�
+     * 解密8个字节
      * 
      * @param in
-     *     �����ֽ�����
+     *     密文字节数组
      * @param offset
-     *     �Ӻδ���ʼ����
+     *     从何处开始解密
      * @param len
-     *     ���ĵĳ���
+     *     密文的长度
      * @return
-     *     true��ʾ���ܳɹ�
+     *     true表示解密成功
      */
     private boolean decrypt8Bytes(byte[] in , int offset, int len) {
-        // �����һ�������жϺ��滹��û�����ݣ�û�оͷ��أ�����У���ִ�� crypt ^ prePlain
+        // 这里第一步就是判断后面还有没有数据，没有就返回，如果有，就执行 crypt ^ prePlain
         for(pos = 0; pos < 8; pos++) {
             if(contextStart + pos >= len) 
                 return true;
             prePlain[pos] ^= in[offset + crypt + pos];
         }
 
-        // �ã�����ִ�е��� d(crypt ^ prePlain)
+        // 好，这里执行到了 d(crypt ^ prePlain)
         prePlain = decipher(prePlain);
         if(prePlain == null)
 			return false;
 
-        // ������ɣ����һ������û���� 
-        // �������һ���ŵ�decrypt����ȥ���ˣ���Ϊ���ܵĲ����е㲻̫һ��
-        // ������Щ������ֵ��
+        // 解密完成，最后一步好像没做？ 
+        // 这里最后一步放到decrypt里面去做了，因为解密的步骤有点不太一样
+        // 调整这些变量的值先
         contextStart += 8;
         crypt += 8;
         pos = 0;
@@ -429,11 +429,11 @@ public class Crypter {
     }
 
     /**
-     * ���Ǹ�������Ӳ��������������ͷ���ģ����Ϊ�˵��ԣ�������һ���̶�ֵ
-     * ������ӿ���ʹ��ͬ������ÿ�μ��ܳ��������Ķ���һ��
+     * 这是个随机因子产生器，用来填充头部的，如果为了调试，可以用一个固定值
+     * 随机因子可以使相同的明文每次加密出来的密文都不一样
      * 
      * @return
-     *     �������
+     *     随机因子
      */
     private int rand() {
         return random.nextInt();

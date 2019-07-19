@@ -9,13 +9,13 @@ public class Packages {
 		qq.shareKey = Utils.hexstr2bytes("957C3AAFBF6FAF1D2C2F19A5EA04E51C");
 		qq.pub_key = Utils.hexstr2bytes("02244B79F2239755E73C73FF583D4EC5625C19BF8095446DE1");
 		new Random().nextBytes(qq.TGTKey);
-		//qq.time = Xbin.Flip (È¡×Ö½Ú¼¯×ó±ß (µ½×Ö½Ú¼¯ (Other.TimeStamp ()), 4))
+		//qq.time = Xbin.Flip (å–å­—èŠ‚é›†å·¦è¾¹ (åˆ°å­—èŠ‚é›† (Other.TimeStamp ()), 4))
 		new Random().nextBytes(qq.randKey);
-		//µ÷ÊÔÊä³ö (¡°TGTKey ¡±, ×Ö½Ú¼¯µ½Ê®Áù½øÖÆÎÄ±¾ (qq.TGTKey))
-		//µ÷ÊÔÊä³ö (¡°randKey ¡±, ×Ö½Ú¼¯µ½Ê®Áù½øÖÆÎÄ±¾ (qq.randKey))
+		//è°ƒè¯•è¾“å‡º (â€œTGTKey â€, å­—èŠ‚é›†åˆ°åå…­è¿›åˆ¶æ–‡æœ¬ (qq.TGTKey))
+		//è°ƒè¯•è¾“å‡º (â€œrandKey â€, å­—èŠ‚é›†åˆ°åå…­è¿›åˆ¶æ–‡æœ¬ (qq.randKey))
 		ByteBuilder bbBuilder=new ByteBuilder();
 		bbBuilder.writebytes("00 09");
-		bbBuilder.writeshort((short) 19);  // 00 13 //ÏÂÃætlv¸öÊı
+		bbBuilder.writeshort((short) 19);  // 00 13 //ä¸‹é¢tlvä¸ªæ•°
 		bbBuilder.writebytes (Tlvs.tlv18 (qq));
 		bbBuilder.writebytes (Tlvs.tlv1 (qq));
 		bbBuilder.writebytes (Tlvs.tlv106 (qq));
@@ -43,11 +43,11 @@ public class Packages {
 
 
 		wupBuffer = pack.GetAll ();
-		//' wupBuffer = Ê®Áù½øÖÆÎÄ±¾µ½×Ö½Ú¼¯ (×ÓÎÄ±¾Ìæ»» (É¾È«²¿¿Õ (_Æô¶¯´°¿Ú.±à¼­¿ò3.ÄÚÈİ), #»»ĞĞ·û, ¡°¡±, , , Õæ))
-		//' µ÷ÊÔÊä³ö (×Ö½Ú¼¯µ½Ê®Áù½øÖÆÎÄ±¾ (wupBuffer))
-		wupBuffer = Pack_Pc (¡°08 10¡±, Hash.QQTEA (wupBuffer, qq.shareKey), qq.randKey, qq.pub_key)
+		//' wupBuffer = åå…­è¿›åˆ¶æ–‡æœ¬åˆ°å­—èŠ‚é›† (å­æ–‡æœ¬æ›¿æ¢ (åˆ å…¨éƒ¨ç©º (_å¯åŠ¨çª—å£.ç¼–è¾‘æ¡†3.å†…å®¹), #æ¢è¡Œç¬¦, â€œâ€, , , çœŸ))
+		//' è°ƒè¯•è¾“å‡º (å­—èŠ‚é›†åˆ°åå…­è¿›åˆ¶æ–‡æœ¬ (wupBuffer))
+		wupBuffer = Pack_Pc (â€œ08 10â€, Hash.QQTEA (wupBuffer, qq.shareKey), qq.randKey, qq.pub_key)
 
-		·µ»Ø (Make_login_sendSsoMsg (¡°wtlogin.login¡±, wupBuffer, {  }, global.imei, qq._ksid, global.ver, Õæ))
+		è¿”å› (Make_login_sendSsoMsg (â€œwtlogin.loginâ€, wupBuffer, {  }, global.imei, qq._ksid, global.ver, çœŸ))
 
 	}
 }

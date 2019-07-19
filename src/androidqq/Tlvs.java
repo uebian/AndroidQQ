@@ -2,22 +2,22 @@ package androidqq;
 
 public class Tlvs {
 	/*
-	 * .×Ó³ÌĞò tlv_pack, ×Ö½Ú¼¯ .²ÎÊı cmd, ÎÄ±¾ĞÍ .²ÎÊı bin, ×Ö½Ú¼¯ .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv_pack, å­—èŠ‚é›† .å‚æ•° cmd, æ–‡æœ¬å‹ .å‚æ•° bin, å­—èŠ‚é›† .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
-	 * pack.Empty () pack.writebytes (cmd) pack.SetShort (È¡×Ö½Ú¼¯³¤¶È (bin))
+	 * pack.Empty () pack.writebytes (cmd) pack.SetShort (å–å­—èŠ‚é›†é•¿åº¦ (bin))
 	 * pack.writebytes (bin)
 	 * 
-	 * ·µ»Ø (pack.GetAll ())
+	 * è¿”å› (pack.GetAll ())
 	 */
 
 	public static byte[] tlv18(QQUser user) {
 		// 00 18 //tlv18
-		// 00 16 //tlv³¤¶È22 Èç¹ûÌ«³¤²»ÊÇtlv°ü
+		// 00 16 //tlvé•¿åº¦22 å¦‚æœå¤ªé•¿ä¸æ˜¯tlvåŒ…
 		// 00 01 //_ping_version=1
 		// 00 00 06 00 //_sso_version=1536
 		// 00 00 00 10 //_appid
 		// 00 00 00 00 //_app_client_version
-		// 18 B4 A1 BC [QQºÅÂë£º414491068]
+		// 18 B4 A1 BC [QQå·ç ï¼š414491068]
 		// 00 00 //0
 		// 00 00 //0
 
@@ -37,17 +37,17 @@ public class Tlvs {
 
 	public static byte[] tlv1(QQUser user) {
 		/*
-		 * , ×Ö½Ú¼¯, ¹«¿ª.²ÎÊı user, ×Ö½Ú¼¯. ²ÎÊı time, ×Ö½Ú¼¯. ¾Ö²¿±äÁ¿ pack,_Pack
+		 * , å­—èŠ‚é›†, å…¬å¼€.å‚æ•° user, å­—èŠ‚é›†. å‚æ•° time, å­—èŠ‚é›†. å±€éƒ¨å˜é‡ pack,_Pack
 		 */
 		// 00 01//tlv1
-		// 00 14//³¤¶È20
+		// 00 14//é•¿åº¦20
 		// 00 01//ip_ver=1
 		// 3F AA 67 F9 // get_rand_32()
-		// 18 B4 A1 BC[QQºÅÂë£º414491068]
+		// 18 B4 A1 BC[QQå·ç ï¼š414491068]
 		// 54 09 99 7F//get_server_cur_time
 		// 00 00 00 00//_ip_addr
 		// 00 00//0
-		// time£½Xbin.Flip(×Ö½Ú¼¯×ó±ß (µ½×Ö½Ú¼¯ (Other.TimeStamp ()), 4))
+		// timeï¼Xbin.Flip(å­—èŠ‚é›†å·¦è¾¹ (åˆ°å­—èŠ‚é›† (Other.TimeStamp ()), 4))
 		ByteBuilder bbBuilder = new ByteBuilder();
 		bbBuilder.writebytes("00 01");
 		bbBuilder.writebytes(Utils.GetRandomBytes(4));
@@ -62,10 +62,10 @@ public class Tlvs {
 
 	public static byte[] tlv106(QQUser user) {
 		/*
-		 * .°æ±¾ 2
+		 * .ç‰ˆæœ¬ 2
 		 * 
-		 * .×Ó³ÌĞò tlv106, ×Ö½Ú¼¯, ¹«¿ª .²ÎÊı user, ×Ö½Ú¼¯ .²ÎÊı md5pass, ×Ö½Ú¼¯ .²ÎÊı md52pass, ×Ö½Ú¼¯ .²ÎÊı
-		 * _TGTKey, ×Ö½Ú¼¯ .²ÎÊı imei_, ×Ö½Ú¼¯ .²ÎÊı time, ×Ö½Ú¼¯ .²ÎÊı appId, ÕûÊıĞÍ .¾Ö²¿±äÁ¿ pack, _Pack
+		 * .å­ç¨‹åº tlv106, å­—èŠ‚é›†, å…¬å¼€ .å‚æ•° user, å­—èŠ‚é›† .å‚æ•° md5pass, å­—èŠ‚é›† .å‚æ•° md52pass, å­—èŠ‚é›† .å‚æ•°
+		 * _TGTKey, å­—èŠ‚é›† .å‚æ•° imei_, å­—èŠ‚é›† .å‚æ•° time, å­—èŠ‚é›† .å‚æ•° appId, æ•´æ•°å‹ .å±€éƒ¨å˜é‡ pack, _Pack
 		 */
 
 		/*
@@ -76,11 +76,11 @@ public class Tlvs {
 		 * FB DF 53 CA 3C B5 F8 F3 13 E4 FF AA 58 39 75 81 45 38 4A A2 BE CA 43 E0 7E 0A
 		 * 83 71 17 5C 88 7C DE DE ED B8 12 E4 D5 C4 22 ' [ ' 00 03 //TGTGTVer=3 ' 29 A5
 		 * 69 34 rand32 ' 00 00 00 05 ' 00 00 00 10 ' 00 00 00 00 ' 00 00 00 00 ' 18 B4
-		 * A1 BC [QQ:414491068] ' 4D 1F C3 AC //Ê±¼ä ' 00 00 00 00 ' 01 ' EB E0 80 63 34
+		 * A1 BC [QQ:414491068] ' 4D 1F C3 AC //æ—¶é—´ ' 00 00 00 00 ' 01 ' EB E0 80 63 34
 		 * 8C 9E E1 FD 6B 5E 05 9A 72 84 C6 //MD5PASS ' C5 2E 0F 5D A6 20 B5 EE 0B 94 F2
 		 * 6F C3 05 4A 02 //TGTKey ' 00 00 00 ' 00 01 ' 46 60 1E D3 C6 24 16 BF CA A2 9E
 		 * 9E B8 9A D2 4E //imei_ ' 20 02 93 92 _sub_appid ' 00 00 00 01 00 00 ' ] '
-		 * time £½Xbin.Flip È¡×Ö½Ú¼¯×ó±ß (µ½×Ö½Ú¼¯ (Other.TimeStamp ()), 4))
+		 * time ï¼Xbin.Flip å–å­—èŠ‚é›†å·¦è¾¹ (åˆ°å­—èŠ‚é›† (Other.TimeStamp ()), 4))
 		 */
 		ByteBuilder bbBuilder = new ByteBuilder();
 		bbBuilder.writebytes("00 03");
@@ -101,7 +101,7 @@ public class Tlvs {
 		bbBuilder.writebytes("00 00");
 		bbBuilder.rewriteint(bbBuilder.getdata().length);
 		bbBuilder.rewritebytes("01 06");
-		// µ÷ÊÔÊä³ö ("01 06", "TGTKey", ×Ö½Ú¼¯µ½Ê®Áù½øÖÆÎÄ±¾ (_TGTKey), ×Ö½Ú¼¯µ½Ê®Áù½øÖÆÎÄ±¾ (pack.GetAll ()))
+		// è°ƒè¯•è¾“å‡º ("01 06", "TGTKey", å­—èŠ‚é›†åˆ°åå…­è¿›åˆ¶æ–‡æœ¬ (_TGTKey), å­—èŠ‚é›†åˆ°åå…­è¿›åˆ¶æ–‡æœ¬ (pack.GetAll ()))
 		byte data[] = new Crypter().encrypt(bbBuilder.getdata(), user.md52);
 		bbBuilder.clean();
 		bbBuilder.writebytes(data);
@@ -128,15 +128,15 @@ public class Tlvs {
 		return bbBuilder.getdata();
 	}
 	/*
-	 * .×Ó³ÌĞò tlv2, ×Ö½Ú¼¯, ¹«¿ª .²ÎÊı code, ÎÄ±¾ĞÍ .²ÎÊı VieryToken1, ×Ö½Ú¼¯ .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv2, å­—èŠ‚é›†, å…¬å¼€ .å‚æ•° code, æ–‡æœ¬å‹ .å‚æ•° VieryToken1, å­—èŠ‚é›† .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 00 02 ' 00 0E ' 00 00 00 04 ' 74 77 79 76 ' 00 04 ' 4B 58 31 35 pack.Empty
-	 * () pack.SetInt (È¡ÎÄ±¾³¤¶È (code)) pack.writebytes (µ½×Ö½Ú¼¯ (code)) pack.SetShort
-	 * (È¡×Ö½Ú¼¯³¤¶È (VieryToken1)) pack.writebytes (VieryToken1)
+	 * () pack.SetInt (å–æ–‡æœ¬é•¿åº¦ (code)) pack.writebytes (åˆ°å­—èŠ‚é›† (code)) pack.SetShort
+	 * (å–å­—èŠ‚é›†é•¿åº¦ (VieryToken1)) pack.writebytes (VieryToken1)
 	 * 
-	 * ·µ»Ø (tlv_pack ("00 02", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("00 02", pack.GetAll ()))
 	 * 
-	 * .×Ó³ÌĞò tlv100, ×Ö½Ú¼¯, ¹«¿ª .²ÎÊı appId, ÕûÊıĞÍ .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv100, å­—èŠ‚é›†, å…¬å¼€ .å‚æ•° appId, æ•´æ•°å‹ .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 00 //tlv-100 ' 00 16 ' 00 01 //_db_buf_ver=1 ' 00 00 00 05 //_sso_ver=5
 	 * ' 00 00 00 10 //appid ' 20 02 92 13 //_sub_appid ' 00 00 00 00
@@ -146,32 +146,32 @@ public class Tlvs {
 	 * pack.writebytes ("00 00 00 10") pack.SetInt (appId) pack.writebytes
 	 * ("00 00 00 00") pack.writebytes ("00 0E 10 E0")
 	 * 
-	 * ·µ»Ø (tlv_pack ("01 00", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 00", pack.GetAll ()))
 	 * 
-	 * .×Ó³ÌĞò tlv104, ×Ö½Ú¼¯, ¹«¿ª .²ÎÊı VieryToken2, ×Ö½Ú¼¯ .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv104, å­—èŠ‚é›†, å…¬å¼€ .å‚æ•° VieryToken2, å­—èŠ‚é›† .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 04 ' 00 14 ' 41 56 51 4F 77 56 78 48 58 78 54 64 43 6F 73 4A ' 4D 6D 57
 	 * 53 //VieryToken2 pack.Empty () pack.writebytes (VieryToken2)
 	 * 
-	 * ·µ»Ø (tlv_pack ("01 04", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 04", pack.GetAll ()))
 	 * 
-	 * .×Ó³ÌĞò tlv107, ×Ö½Ú¼¯, ¹«¿ª .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv107, å­—èŠ‚é›†, å…¬å¼€ .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 07 //tlv-107 ' 00 06 ' 00 00 //_pic_type ' 00 //0 ' 00 00 //0 ' 01 //1
 	 * pack.Empty () pack.writebytes ("00 00") pack.writebytes ("00")
 	 * pack.writebytes ("00 00") pack.writebytes ("01")
 	 * 
-	 * ·µ»Ø (tlv_pack ("01 07", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 07", pack.GetAll ()))
 	 * 
 	 * 
-	 * .×Ó³ÌĞò tlv108, ×Ö½Ú¼¯, ¹«¿ª .²ÎÊı _ksid, ×Ö½Ú¼¯
+	 * .å­ç¨‹åº tlv108, å­—èŠ‚é›†, å…¬å¼€ .å‚æ•° _ksid, å­—èŠ‚é›†
 	 * 
 	 * ' 01 08 //tlv108 ' 00 10 ' 93 33 4E AD B8 08 D3 42 82 55 B7 EF 28 E7 E8 F5
-	 * //request_global._ksid _ksid £½ { } ·µ»Ø (tlv_pack ("01 08", _ksid))
+	 * //request_global._ksid _ksid ï¼ { } è¿”å› (tlv_pack ("01 08", _ksid))
 	 * 
 	 * 
-	 * .×Ó³ÌĞò tlv144, ×Ö½Ú¼¯, ¹«¿ª .²ÎÊı TGTKey, ×Ö½Ú¼¯ .²ÎÊı tlv109, ×Ö½Ú¼¯ .²ÎÊı tlv124, ×Ö½Ú¼¯ .²ÎÊı
-	 * tlv128, ×Ö½Ú¼¯ .²ÎÊı tlv16e, ×Ö½Ú¼¯ .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv144, å­—èŠ‚é›†, å…¬å¼€ .å‚æ•° TGTKey, å­—èŠ‚é›† .å‚æ•° tlv109, å­—èŠ‚é›† .å‚æ•° tlv124, å­—èŠ‚é›† .å‚æ•°
+	 * tlv128, å­—èŠ‚é›† .å‚æ•° tlv16e, å­—èŠ‚é›† .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 44 ' 00 80 (////_tgtgt_key) ' 60 17 BF D3 F7 A4 7E C5 BC 07 47 98 B3 9B
 	 * 12 C1 ' CC F6 87 13 7A 28 BB 62 18 3B 1A 43 F8 FE 07 87 ' CB CF 40 3D BD DB
@@ -179,7 +179,7 @@ public class Tlvs {
 	 * B5 ' A0 8E CB 5E 31 70 26 44 EA 79 AD A7 76 00 2A 26 ' 56 92 38 EA 78 BB CC
 	 * 4E E8 E3 F4 CD FE 19 AB 32 ' A6 BB 31 72 D7 25 93 94 4A EF A7 94 A9 59 B2 73
 	 * ' 55 95 4C FC AD C4 1A C2 15 C6 8F A1 39 48 F8 1A ' [ ' 00 04
-	 * //get_tlv_144ËÄ¸ö²ÎÊıbyte[]¶¼ÓĞÊı¾İ ' 01 09 //tlv-109 ' 00 10 ' 46 60 1E D3 C6 24 16
+	 * //get_tlv_144å››ä¸ªå‚æ•°byte[]éƒ½æœ‰æ•°æ® ' 01 09 //tlv-109 ' 00 10 ' 46 60 1E D3 C6 24 16
 	 * BF CA A2 9E 9E B8 9A D2 4E //_IMEI ' 01 24 //tlv-124 ' 00 1C ' 00 07 61 6E 64
 	 * 72 6F 69 64 00 05 34 2E 30 2E 34 ' 00 01 00 00 00 00 00 04 77 69 66 69 ' 01
 	 * 28 //tlv-128 ' 00 2B ' 00 00 //0 ' 00 //request_global._new_install ' 01
@@ -193,29 +193,29 @@ public class Tlvs {
 	 * pack.Empty () pack.SetShort (4) pack.writebytes (tlv109) pack.writebytes
 	 * (tlv124) pack.writebytes (tlv128) pack.writebytes (tlv16e)
 	 * 
-	 * ' µ÷ÊÔÊä³ö ("01 44", "TGTKey", ×Ö½Ú¼¯µ½Ê®Áù½øÖÆÎÄ±¾ (TGTKey), ×Ö½Ú¼¯µ½Ê®Áù½øÖÆÎÄ±¾ (pack.GetAll ()))
-	 * ·µ»Ø (tlv_pack ("01 44", Hash.QQTEA (pack.GetAll (), TGTKey)))
+	 * ' è°ƒè¯•è¾“å‡º ("01 44", "TGTKey", å­—èŠ‚é›†åˆ°åå…­è¿›åˆ¶æ–‡æœ¬ (TGTKey), å­—èŠ‚é›†åˆ°åå…­è¿›åˆ¶æ–‡æœ¬ (pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 44", Hash.QQTEA (pack.GetAll (), TGTKey)))
 	 * 
-	 * .×Ó³ÌĞò tlv109, ×Ö½Ú¼¯, ¹«¿ª .²ÎÊı imei_, ×Ö½Ú¼¯
+	 * .å­ç¨‹åº tlv109, å­—èŠ‚é›†, å…¬å¼€ .å‚æ•° imei_, å­—èŠ‚é›†
 	 * 
 	 * ' 01 09 //tlv-109 ' 00 10 ' 46 60 1E D3 C6 24 16 BF CA A2 9E 9E B8 9A D2 4E
-	 * //_IMEI ·µ»Ø (tlv_pack ("01 09", imei_))
+	 * //_IMEI è¿”å› (tlv_pack ("01 09", imei_))
 	 * 
 	 * 
-	 * .×Ó³ÌĞò tlv124, ×Ö½Ú¼¯, ¹«¿ª .²ÎÊı os_type, ÎÄ±¾ĞÍ .²ÎÊı os_version, ÎÄ±¾ĞÍ .²ÎÊı _network_type,
-	 * ÕûÊıĞÍ .²ÎÊı _apn, ÎÄ±¾ĞÍ .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv124, å­—èŠ‚é›†, å…¬å¼€ .å‚æ•° os_type, æ–‡æœ¬å‹ .å‚æ•° os_version, æ–‡æœ¬å‹ .å‚æ•° _network_type,
+	 * æ•´æ•°å‹ .å‚æ•° _apn, æ–‡æœ¬å‹ .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 24 //tlv-124 ' 00 1C ' 00 07 //os_type ' 61 6E 64 72 6F 69 64 ' 00 05
 	 * //os_version ' 34 2E 30 2E 34 ' 00 01 //_network_type ' 00 00
 	 * //._sim_operator_name ' 00 00 //0 ' 00 04 //_apn ' 77 69 66 69 pack.SetShort
-	 * (È¡ÎÄ±¾³¤¶È (os_type)) pack.SetStr (os_type) pack.SetShort (È¡ÎÄ±¾³¤¶È (os_version))
+	 * (å–æ–‡æœ¬é•¿åº¦ (os_type)) pack.SetStr (os_type) pack.SetShort (å–æ–‡æœ¬é•¿åº¦ (os_version))
 	 * pack.SetStr (os_version) pack.SetShort (_network_type) pack.writebytes
-	 * ("00 00") pack.writebytes ("00 00") pack.SetShort (È¡ÎÄ±¾³¤¶È (_apn)) pack.SetStr
+	 * ("00 00") pack.writebytes ("00 00") pack.SetShort (å–æ–‡æœ¬é•¿åº¦ (_apn)) pack.SetStr
 	 * (_apn)
 	 * 
-	 * ·µ»Ø (tlv_pack ("01 24", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 24", pack.GetAll ()))
 	 * 
-	 * .×Ó³ÌĞò tlv128, ×Ö½Ú¼¯, ¹«¿ª .²ÎÊı _device, ÎÄ±¾ĞÍ .²ÎÊı imei_, ×Ö½Ú¼¯ .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv128, å­—èŠ‚é›†, å…¬å¼€ .å‚æ•° _device, æ–‡æœ¬å‹ .å‚æ•° imei_, å­—èŠ‚é›† .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 28 //tlv-128 ' 00 2B ' 00 00 //0 ' 00 //request_global._new_install ' 01
 	 * //request_global._read_guid ' 00 //request_global._guid_chg ' 01 00 00 00
@@ -223,66 +223,66 @@ public class Tlvs {
 	 * //request_global._device=HUAWEI U9508 ' 00 10 ' 46 60 1E D3 C6 24 16 BF CA A2
 	 * 9E 9E B8 9A D2 4E //request_global._IMEI ' 00 00 //0 pack.Empty ()
 	 * pack.writebytes ("00 00") pack.writebytes ("00") pack.writebytes ("01")
-	 * pack.writebytes ("01") pack.writebytes ("01 00 02 00") pack.SetShort (È¡ÎÄ±¾³¤¶È
-	 * (_device)) pack.SetStr (_device) pack.SetShort (È¡×Ö½Ú¼¯³¤¶È (imei_))
+	 * pack.writebytes ("01") pack.writebytes ("01 00 02 00") pack.SetShort (å–æ–‡æœ¬é•¿åº¦
+	 * (_device)) pack.SetStr (_device) pack.SetShort (å–å­—èŠ‚é›†é•¿åº¦ (imei_))
 	 * pack.writebytes (imei_) pack.writebytes ("00 00")
 	 * 
-	 * ·µ»Ø (tlv_pack ("01 28", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 28", pack.GetAll ()))
 	 * 
-	 * .×Ó³ÌĞò tlv16e, ×Ö½Ú¼¯, ¹«¿ª .²ÎÊı _device, ÎÄ±¾ĞÍ .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv16e, å­—èŠ‚é›†, å…¬å¼€ .å‚æ•° _device, æ–‡æœ¬å‹ .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 6E //tlv-16e ' 00 0C ' 48 55 41 57 45 49 20 55 39 35 30 38
-	 * //request_global._device=HUAWEI U9508 pack.Empty () pack.writebytes (µ½×Ö½Ú¼¯
+	 * //request_global._device=HUAWEI U9508 pack.Empty () pack.writebytes (åˆ°å­—èŠ‚é›†
 	 * (_device))
 	 * 
-	 * ·µ»Ø (tlv_pack ("01 6E", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 6E", pack.GetAll ()))
 	 * 
 	 * 
-	 * .×Ó³ÌĞò tlv142, ×Ö½Ú¼¯, ¹«¿ª .²ÎÊı _apk_id, ÎÄ±¾ĞÍ .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv142, å­—èŠ‚é›†, å…¬å¼€ .å‚æ•° _apk_id, æ–‡æœ¬å‹ .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 42 //tlv142 ' 00 16 //len ' 00 00 00 12 //len ' 63 6F 6D 2E 74 65 6E 63
 	 * 65 6E 74 2E 71 71 6C 69 ' 74 65 //request_global._apk_id=com.tencent.qqlite
-	 * pack.Empty () pack.SetInt (È¡×Ö½Ú¼¯³¤¶È (µ½×Ö½Ú¼¯ (_apk_id))) pack.writebytes (µ½×Ö½Ú¼¯
+	 * pack.Empty () pack.SetInt (å–å­—èŠ‚é›†é•¿åº¦ (åˆ°å­—èŠ‚é›† (_apk_id))) pack.writebytes (åˆ°å­—èŠ‚é›†
 	 * (_apk_id))
 	 * 
-	 * ·µ»Ø (tlv_pack ("01 42", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 42", pack.GetAll ()))
 	 * 
-	 * .×Ó³ÌĞò tlv154, ×Ö½Ú¼¯, ¹«¿ª .²ÎÊı _sso_seq, ÕûÊıĞÍ .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv154, å­—èŠ‚é›†, å…¬å¼€ .å‚æ•° _sso_seq, æ•´æ•°å‹ .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 54 //tlv-154 ' 00 04 ' 00 01 19 6A //this._g._sso_seq pack.Empty ()
 	 * pack.SetInt (_sso_seq)
 	 * 
-	 * ·µ»Ø (tlv_pack ("01 54", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 54", pack.GetAll ()))
 	 * 
-	 * .×Ó³ÌĞò tlv145, ×Ö½Ú¼¯, ¹«¿ª .²ÎÊı imei_, ×Ö½Ú¼¯ .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv145, å­—èŠ‚é›†, å…¬å¼€ .å‚æ•° imei_, å­—èŠ‚é›† .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 45 //tlv-145 ' 00 10 ' 46 60 1E D3 C6 24 16 BF CA A2 9E 9E B8 9A D2 4E
 	 * //request_global._IMEI pack.Empty () pack.writebytes (imei_)
 	 * 
-	 * ·µ»Ø (tlv_pack ("01 45", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 45", pack.GetAll ()))
 	 * 
 	 * 
-	 * .×Ó³ÌĞò tlv141, ×Ö½Ú¼¯, ¹«¿ª .²ÎÊı _network_type, ÕûÊıĞÍ .²ÎÊı _apn, ÎÄ±¾ĞÍ .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv141, å­—èŠ‚é›†, å…¬å¼€ .å‚æ•° _network_type, æ•´æ•°å‹ .å‚æ•° _apn, æ–‡æœ¬å‹ .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 41 //tlv-141 ' 00 0C ' 00 01 // this._version=1 ' 00 00
 	 * //request_global._sim_operator_name ' 00 01 //request_global._network_type '
 	 * 00 04 //len ' 77 69 66 69 // request_global._apn
 	 * 
 	 * pack.Empty () pack.writebytes ("00 01") pack.writebytes ("00 00")
-	 * pack.SetShort (_network_type) pack.SetShort (È¡ÎÄ±¾³¤¶È (_apn)) pack.SetStr (_apn)
+	 * pack.SetShort (_network_type) pack.SetShort (å–æ–‡æœ¬é•¿åº¦ (_apn)) pack.SetStr (_apn)
 	 * 
-	 * ·µ»Ø (tlv_pack ("01 41", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 41", pack.GetAll ()))
 	 * 
-	 * .×Ó³ÌĞò tlv8, ×Ö½Ú¼¯, ¹«¿ª .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv8, å­—èŠ‚é›†, å…¬å¼€ .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 00 08 //tlv-8 ' 00 08 ' 00 00 //0 ' 00 00 08 04 //request_global._local_id
 	 * ' 00 00 //0 pack.writebytes ("00 00 ") pack.writebytes ("00 00 08 04")
 	 * pack.writebytes ("00 00")
 	 * 
-	 * ·µ»Ø (tlv_pack ("00 08", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("00 08", pack.GetAll ()))
 	 * 
 	 * 
-	 * .×Ó³ÌĞò tlv16b, ×Ö½Ú¼¯, ¹«¿ª .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv16b, å­—èŠ‚é›†, å…¬å¼€ .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 6B ' 00 0F ' 00 01 ' 00 0B ' 67 61 6D 65 2E 71 71 2E 63 6F 6D
 	 * [game.qq.com]
@@ -290,62 +290,62 @@ public class Tlvs {
 	 * pack.Empty () pack.writebytes ("00 01") pack.writebytes (" 00 0B")
 	 * pack.writebytes ("67 61 6D 65 2E 71 71 2E 63 6F 6D")
 	 * 
-	 * ·µ»Ø (tlv_pack ("01 6B", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 6B", pack.GetAll ()))
 	 * 
-	 * .×Ó³ÌĞò tlv147, ×Ö½Ú¼¯, ¹«¿ª .²ÎÊı _apk_v, ÎÄ±¾ĞÍ .²ÎÊı _apk_sig, ×Ö½Ú¼¯ .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv147, å­—èŠ‚é›†, å…¬å¼€ .å‚æ•° _apk_v, æ–‡æœ¬å‹ .å‚æ•° _apk_sig, å­—èŠ‚é›† .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 47//tlv-147 ' 00 1D ' 00 00 00 10 //appid ' 00 05 ' 33 2E 30 2E 30 //
 	 * request_global._apk_v ' 00 10 ' A6 B7 45 BF 24 A2 C2 77 52 77 16 F6 F3 6E B6
 	 * 8D //request_global._apk_sig pack.Empty () pack.writebytes ("00 00 00 10")
-	 * pack.SetShort (È¡ÎÄ±¾³¤¶È (_apk_v)) pack.SetStr (_apk_v) pack.SetShort (È¡×Ö½Ú¼¯³¤¶È
+	 * pack.SetShort (å–æ–‡æœ¬é•¿åº¦ (_apk_v)) pack.SetStr (_apk_v) pack.SetShort (å–å­—èŠ‚é›†é•¿åº¦
 	 * (_apk_sig)) pack.writebytes (_apk_sig)
 	 * 
-	 * ·µ»Ø (tlv_pack ("01 47", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 47", pack.GetAll ()))
 	 * 
 	 * 
-	 * .×Ó³ÌĞò tlv177, ×Ö½Ú¼¯, ¹«¿ª .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv177, å­—èŠ‚é›†, å…¬å¼€ .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 77 ' 00 0E ' 01 ' 53 FB 17 9B ' 00 07 ' 35 2E 32 2E 33 2E 30 [5.2.3.0]
 	 * pack.Empty () pack.writebytes ("01") pack.writebytes ("53 FB 17 9B")
 	 * pack.writebytes ("00 07") pack.writebytes ("35 2E 32 2E 33 2E 30")
 	 * 
-	 * ·µ»Ø (tlv_pack ("01 77", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 77", pack.GetAll ()))
 	 * 
-	 * .×Ó³ÌĞò tlv114_get0058, ×Ö½Ú¼¯, ¹«¿ª .²ÎÊı bin, ×Ö½Ú¼¯ .¾Ö²¿±äÁ¿ unPack, _Unpack .¾Ö²¿±äÁ¿ len
+	 * .å­ç¨‹åº tlv114_get0058, å­—èŠ‚é›†, å…¬å¼€ .å‚æ•° bin, å­—èŠ‚é›† .å±€éƒ¨å˜é‡ unPack, _Unpack .å±€éƒ¨å˜é‡ len
 	 * 
-	 * ' 00 01 54 09 99 81 ' 00 58 //ÏÂÃæµÄdata ' D1 48 33 52 6C F5 AA 2C 59 2E 7E E0
+	 * ' 00 01 54 09 99 81 ' 00 58 //ä¸‹é¢çš„data ' D1 48 33 52 6C F5 AA 2C 59 2E 7E E0
 	 * 85 55 39 9E ' 35 C9 93 1E 1E 71 3F B7 AF 0E 17 D1 C4 13 69 C4 ' A6 75 38 52
 	 * BF 0F F1 DA B1 61 B9 A0 39 14 F9 8D ' 59 6A EB F2 B8 33 66 A1 9E A5 7C 61 0D
 	 * 0F 28 B6 ' C2 7D 72 1B 5C A5 96 42 80 80 F1 22 DF 5A 8C B8 ' 4A 8E BB F3 56
-	 * B4 F4 13 unPack.SetData (bin) unPack.GetBin (6) len £½ unPack.GetShort () .Èç¹ûÕæ
-	 * (len ¡Ù 88) µ÷ÊÔÊä³ö ("error tlv114_get0058 len!=0058") .Èç¹ûÕæ½áÊø ·µ»Ø (unPack.GetBin
+	 * B4 F4 13 unPack.SetData (bin) unPack.GetBin (6) len ï¼ unPack.GetShort () .å¦‚æœçœŸ
+	 * (len â‰  88) è°ƒè¯•è¾“å‡º ("error tlv114_get0058 len!=0058") .å¦‚æœçœŸç»“æŸ è¿”å› (unPack.GetBin
 	 * (len))
 	 * 
-	 * .×Ó³ÌĞò tlv187, ×Ö½Ú¼¯, ¹«¿ª .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv187, å­—èŠ‚é›†, å…¬å¼€ .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 87 ' 00 10 ' F8 FF 12 23 6E 0D AF 24 97 CE 7E D6 A0 7B DD 68
 	 * 
 	 * pack.Empty () pack.writebytes
 	 * ("F8 FF 12 23 6E 0D AF 24 97 CE 7E D6 A0 7B DD 68")
 	 * 
-	 * ·µ»Ø (tlv_pack ("01 87", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 87", pack.GetAll ()))
 	 * 
-	 * .×Ó³ÌĞò tlv188, ×Ö½Ú¼¯, ¹«¿ª .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv188, å­—èŠ‚é›†, å…¬å¼€ .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 88 ' 00 10 ' 4D BF 65 33 D9 08 C2 73 63 6D E5 CD AE 83 C0 43
 	 * 
 	 * pack.Empty () pack.writebytes
 	 * ("4D BF 65 33 D9 08 C2 73 63 6D E5 CD AE 83 C0 43")
 	 * 
-	 * ·µ»Ø (tlv_pack ("01 88", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 88", pack.GetAll ()))
 	 * 
-	 * .×Ó³ÌĞò tlv191, ×Ö½Ú¼¯, ¹«¿ª .¾Ö²¿±äÁ¿ pack, _Pack
+	 * .å­ç¨‹åº tlv191, å­—èŠ‚é›†, å…¬å¼€ .å±€éƒ¨å˜é‡ pack, _Pack
 	 * 
 	 * ' 01 91 ' 00 01 ' 00
 	 * 
 	 * pack.Empty () pack.writebytes ("00")
 	 * 
-	 * ·µ»Ø (tlv_pack ("01 91", pack.GetAll ()))
+	 * è¿”å› (tlv_pack ("01 91", pack.GetAll ()))
 	 */
 
 }
