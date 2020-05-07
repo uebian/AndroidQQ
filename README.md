@@ -3,4 +3,4 @@
 欢迎PR，捐赠,Star,Fork。您的支持是我前进的动力。
  
 
-# 出于一定的原因，本项目停，请使用项目https://github.com/mamoe/mirai
+# 出于一定的原因，本项目停更，请使用项目https://github.com/mamoe/mirai
